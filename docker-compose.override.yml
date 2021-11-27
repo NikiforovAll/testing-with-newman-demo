@@ -1,0 +1,37 @@
+version: "3.4"
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"
+      - "15692:15692"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    networks:
+      - rabbitmq_network
+
+  mongo:
+    image: mongo
+    environment: 
+        - MONGO_INITDB_DATABASE=test
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=root
+    volumes: 
+        - mongodata:/data/db
+        - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports: 
+        - 27017-27019:27017-27019
+
+networks:
+  rabbitmq_network:
+      driver: bridge
+
+volumes:
+  mongodata:
+  rabbitmqdata:

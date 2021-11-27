@@ -1,0 +1,28 @@
+version: "3.4"
+
+services:
+
+  main-flow:
+    image: postman/newman_alpine33
+    command:
+      run testing-with-newman.postman_collection.json
+      --environment testing-with-newman.postman_environment.json
+      --folder main-flow
+      -r cli
+      --delay-request 300
+      --iteration-count 1
+      --color on
+    volumes:
+      - ./tests/postman:/etc/newman
+
+  cancel-flow:
+    image: postman/newman_alpine33
+    command:
+      run testing-with-newman.postman_collection.json
+      --environment testing-with-newman.postman_environment.json
+      --folder cancel-flow
+      -r cli
+      --iteration-count 1
+      --color on
+    volumes:
+      - ./tests/postman:/etc/newman

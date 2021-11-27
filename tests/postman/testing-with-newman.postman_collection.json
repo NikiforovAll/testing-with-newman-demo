@@ -1,0 +1,359 @@
+{
+	"info": {
+		"_postman_id": "324cc8a0-eac8-4a06-8cf1-2aa70841598c",
+		"name": "testing-with-newman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "main-flow",
+			"item": [
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.sendRequest(pm.response.headers.get(\"Location\"), function (err, res) {\r",
+									"    pm.test(\"Order created\", function () {\r",
+									"        pm.expect(res.code).to.eql(200);\r",
+									"        pm.environment.set(\"orderId\", res.json().id);\r",
+									"        pm.test(\"Order has customer\", function () {\r",
+									"            pm.expect(res.json().customer).to.eql('John Doe');\r",
+									"        });\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\": \"John Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 1,\r\n            \"product\": \"Ice Cream with Chocolate\",\r\n            \"price\": 2.0\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/orders",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Order Paid [rabbitmq]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Is Routed\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.routed).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"properties\": {\r\n        \"content_type\": \"application/json\"\r\n    },\r\n    \"routing_key\": \"order-paid\",\r\n    \"payload\": \"{\\\"orderId\\\": \\\"{{orderId}}\\\"}\",\r\n    \"payload_encoding\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rabbitmq-host}}/api/exchanges/%2F/amq.default/publish",
+							"host": [
+								"{{rabbitmq-host}}"
+							],
+							"path": [
+								"api",
+								"exchanges",
+								"%2F",
+								"amq.default",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(checkWithDelay, 300);\r",
+									"\r",
+									"function checkWithDelay() {\r",
+									"    pm.test(\"Status code is 200\", function () {\r",
+									"        pm.response.to.have.status(200);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Order is Completed\", function () {\r",
+									"        pm.expect(pm.response.json().status).to.eql(\"Completed\");\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/orders/{{orderId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cancel-flow",
+			"item": [
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.sendRequest(pm.response.headers.get(\"Location\"), function (err, res) {\r",
+									"    pm.test(\"Order created\", function () {\r",
+									"        pm.expect(res.code).to.eql(200);\r",
+									"        pm.environment.set(\"orderId\", res.json().id);\r",
+									"        pm.test(\"Order has customer\", function () {\r",
+									"            pm.expect(res.json().customer).to.eql('Jane Doe');\r",
+									"        });\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/orders",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/orders/{{orderId}}/cancel",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"orders",
+								"{{orderId}}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Order has Cupcakes\", function () {\r",
+									"    pm.expect(pm.response.json().lineItems).to.eql([\r",
+									"        {\r",
+									"            \"product\": \"Cupcake\",\r",
+									"            \"quantity\": 5,\r",
+									"            \"price\": 1.0\r",
+									"        },\r",
+									"        {\r",
+									"            \"product\": \"Orange Juice\",\r",
+									"            \"quantity\": 5,\r",
+									"            \"price\": 1.5\r",
+									"        }\r",
+									"    ]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Order is Cancelled\", function () {\r",
+									"    pm.expect(pm.response.json().status).to.eql(\"Cancelled\");\r",
+									"});\r",
+									"\r",
+									"var schema = {\r",
+									"    \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r",
+									"    \"type\": \"object\",\r",
+									"    \"items\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"id\": { \r",
+									"                \"type\": \"integer\" \r",
+									"            },\r",
+									"            \"status\": {\r",
+									"                \"type\": \"string\"\r",
+									"            },\r",
+									"            \"customer\": {\r",
+									"                \"type\": \"string\"\r",
+									"            }\r",
+									"        },\r",
+									"        \r",
+									"    },\r",
+									"    \"additionalProperties\": true,\r",
+									"};\r",
+									"\r",
+									"\r",
+									"pm.test('Schema is valid', function () {\r",
+									"    pm.expect(tv4.validate(pm.response, schema)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/orders/{{orderId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
