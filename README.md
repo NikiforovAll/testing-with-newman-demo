@@ -1,4 +1,4 @@
-# Testing with Newman
+# Automatic Testing with Postman (newman) via Docker
 
 This project shows how to setup API testing with postman (newman) and `docker compose`.
 
@@ -35,13 +35,13 @@ app.Run();
 ![routes-overview.png](./assets/routes-overview.png)
 ![get-order-by-id-example.png](./assets/get-order-by-id-example.png)
 
-## Newman
+## newman
 
 See: <https://github.com/postmanlabs/newman>
 
 Collection that is used as test run located at [testing-with-newman.postman_collection.json](tests/postman/testing-with-newman.postman_collection.json).
 
-## Run Newman from `docker compose`
+## Run newman from `docker compose`
 
 ```bash
 docker compose -f docker-compose.postman.yml up main-flow
