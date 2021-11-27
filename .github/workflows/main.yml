@@ -18,7 +18,8 @@ jobs:
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
-        run: docker logs order-service
+        run: docker-compose logs order-service
       - name: Run test suite main-flow
         run: docker-compose -f docker-compose.postman.yml up main-flow
-
+      - name: Run test suite cancel-flow
+        run: docker-compose -f docker-compose.postman.yml up cancel-flow
