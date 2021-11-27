@@ -18,6 +18,8 @@ jobs:
         run: docker ps -a
       - name: Check logs
         run: docker-compose logs order-service
+      - name: Setup network
+        run: docker network create newman-tests
       - name: Run test suite main-flow
         run: docker-compose -f docker-compose.postman.yml up main-flow
       - name: Run test suite cancel-flow

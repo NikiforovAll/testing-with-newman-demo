@@ -9,12 +9,13 @@ services:
       --environment testing-with-newman.postman_environment.json
       --folder main-flow
       -r cli
-      --delay-request 300
+      --delay-request 500
       --iteration-count 1
       --color on
     volumes:
       - ./tests/postman:/etc/newman
-
+    networks:
+      - newman-tests
   cancel-flow:
     image: postman/newman_alpine33
     command:
@@ -26,3 +27,10 @@ services:
       --color on
     volumes:
       - ./tests/postman:/etc/newman
+    networks:
+      - newman-tests
+
+networks:
+  newman-tests:
+    external: true
+    name: newman-tests

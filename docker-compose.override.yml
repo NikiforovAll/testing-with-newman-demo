@@ -2,12 +2,15 @@ version: "3.4"
 
 services:
   order-service:
+    hostname: order-service
     environment:
       - ASPNETCORE_URLS=http://+:5126
       - ConnectionStrings__MongoDB=mongodb://root:root@mongo:27017
       - ConnectionStrings__RabbitMQ=amqp://admin:admin@rabbitmq:5672
     ports:
       - "5126:5126"
+    networks:
+      - newman-tests
   rabbitmq:
     image: rabbitmq:3.8-management
     hostname: rabbitmq
@@ -20,7 +23,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
-
+    networks:
+      - newman-tests
   mongo:
     image: mongo
     hostname: mongo
@@ -33,6 +37,12 @@ services:
         - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports: 
         - 27017-27019:27017-27019
+    networks:
+      - newman-tests
 volumes:
   mongodata:
   rabbitmqdata:
+
+networks:
+  newman-tests:
+    external: true
