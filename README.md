@@ -1,4 +1,4 @@
-# Automatic Testing with Postman (newman) via Docker
+# Automatic Testing with Postman (newman) via Docker [![tests](https://github.com/NikiforovAll/testing-with-newman-demo/actions/workflows/main.yml/badge.svg)](https://github.com/NikiforovAll/testing-with-newman-demo/actions/workflows/main.yml)
 
 This project shows how to setup API testing with postman (newman) and `docker compose`.
 
