@@ -6,31 +6,7 @@ This project shows how to setup API testing with postman (newman) and `docker co
 
 We will test very simple microservice - OrderService. It is responsible for order processing. The *MongoDB* is used as storage and *RabbitMQ* allows to complete an order once it is paid (presumably this notification event will be said by some other microservice).
 
-```csharp
-using OrderService;
-using OrderService.Orders;
-
-var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
-var configuration = builder.Configuration;
-
-services.AddMessageBroker(configuration);
-services.AddMongo(configuration);
-services.AddIdGenerator();
-
-var app = builder.Build();
-
-app.MapOrderApiRoutes();
-
-app.MapGet("/", () => new SiteMap()
-    with { Home = "/" }
-    with { Orders = "/orders" }
-        with { GetOrder = "/orders/{id}" }
-        with { CreateOrder = "/orders" }
-        with { CancelOrder = "/orders/{id}/cancel" }
-);
-app.Run();
-```
+![program-cs-snap](./assets/program-cs-code-snap.png)
 
 ![routes-overview.png](./assets/routes-overview.png)
 ![get-order-by-id-example.png](./assets/get-order-by-id-example.png)

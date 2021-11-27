@@ -9,9 +9,7 @@ public static class OrderApiRoutes
     {
         app.MapPost("/orders/", CreateOrder);
         app.MapGet("/orders", GetOrders);
-        app.MapGet("/orders/{id}", GetOrderById)
-            .WithName(nameof(GetOrderById));
-
+        app.MapGet("/orders/{id}", GetOrderById).WithName(nameof(GetOrderById));
         app.MapPut("/orders/{id}/cancel", CancelOrderById);
 
         return app;
@@ -27,9 +25,7 @@ public static class OrderApiRoutes
         {
             return Results.NotFound();
         }
-
         order.Cancel();
-
         await db.ReplaceOneAsync(x => x.Id == id, order);
 
         return Results.NoContent();
@@ -64,5 +60,4 @@ public static class OrderApiRoutes
 
         return await db.Find(x => true).ToListAsync();
     }
-
 }

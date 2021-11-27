@@ -150,7 +150,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -325,21 +325,9 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"customer\": \"Jane Doe\",\r\n    \"lineItems\": [\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Cupcake\",\r\n            \"price\": 1.0\r\n        },\r\n        {\r\n            \"quantity\": 5,\r\n            \"product\": \"Orange Juice\",\r\n            \"price\": 1.5\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{base-url}}/orders/{{orderId}}",
 							"host": [
